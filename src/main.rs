@@ -10,7 +10,7 @@ use rocket::response::status;
 
 #[get("/")]
 fn index() -> &'static str {
-    "Hello, world!"
+    "Ok"
 }
 
 #[get("/<key>")]
@@ -46,9 +46,8 @@ fn main() {
     rocket().launch();
 }
 
-
 #[cfg(test)]
-    mod test {
+mod test {
     use super::rocket;
     use rocket::local::Client;
     use rocket::http::Status;
@@ -59,7 +58,7 @@ fn main() {
         let mut response = client.get("/").dispatch();
 
         assert_eq!(response.status(), Status::Ok);
-        assert_eq!(response.body_string(), Some("Hello, world!".into()));
+        assert_eq!(response.body_string(), Some("Ok".into()));
     }
 
     #[test]
@@ -82,4 +81,22 @@ fn main() {
         assert_eq!(now_it_should_have_the_key.body_string(), Some("value".into()));
     }
 
+    #[test]
+    fn it_updates_a_key() {
+        let client = Client::new(rocket()).expect("Valid rocket instance");
+
+        let create_key_response = client.post("/key/value").dispatch();
+        assert_eq!(create_key_response.status(), Status::Created);
+
+        let mut retrieve_key_response  = client.get("/key").dispatch();
+        assert_eq!(retrieve_key_response.status(), Status::Ok);
+        assert_eq!(retrieve_key_response.body_string(), Some("value".into()));
+
+        let update_key_response = client.post("/key/potato").dispatch();
+        assert_eq!(update_key_response.status(), Status::Created);
+
+        let mut retrieve_updated_key_response  = client.get("/key").dispatch();
+        assert_eq!(retrieve_updated_key_response.status(), Status::Ok);
+        assert_eq!(retrieve_updated_key_response.body_string(), Some("potato".into()));
+    }
 }
