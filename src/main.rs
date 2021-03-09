@@ -7,6 +7,7 @@ use std::sync::Mutex;
 use rocket::State;
 use rocket::http::Status;
 use rocket::response::status;
+use rocket_prometheus::PrometheusMetrics;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -37,7 +38,10 @@ struct Db {
 }
 
 fn rocket() -> rocket::Rocket {
+    let prometheus = PrometheusMetrics::new();
     rocket::ignite()
+        .attach(prometheus.clone())
+        .mount("/metrics", prometheus)
         .mount("/", routes![index, retrieve, store])
         .manage(Db { content: Mutex::new(HashMap::new())})
 }

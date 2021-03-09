@@ -1,9 +1,16 @@
 version: '3'
+
+networks:
+  monitoring_global:
+    external: true
+
 services:
-  keystore-api:
+  keystore:
     build: .
     restart: always
     ports:
       - 8000:8000
     volumes:
       - .:/code
+    networks:
+      - monitoring_global

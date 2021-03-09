@@ -13,8 +13,8 @@ docker-down:
 
 .PHONY: docker-logs
 docker-logs:
-	docker-compose logs -f keystore-api
+	docker-compose logs -f keystore
 
 .PHONY: docker-exec
 docker-exec:
-	docker-compose exec keystore-api sh
+	docker-compose exec keystore sh
